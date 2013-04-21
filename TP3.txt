@@ -19,6 +19,7 @@ lireTab: SUBSP   6,i         ; reserve var locales #taille #addrt #addrfin
          ADDX    addrt,s     
          STX     addrfin,s   ; addrfin = addrt + taille
          LDX     addrt,s     ; for (X=addrt; X<addrfin; X+=2) {
+         ADDX    2,i
 lire:    CPX     addrfin,s   
          BRGE    rTfin       ;fin de la saisie, le tableau est rempli  TROUVER un truc pour v/rifi/ au<il ne reste rien
          CHARI   0,x    ;;
