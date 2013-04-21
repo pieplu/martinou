@@ -2,12 +2,11 @@
 ; Programme principal. Invoque simplement la fonction.
          LDA     tab,i       
          LDX     tabLen,i    
-         CALL    lireTab 
-         
+         CALL    lireTab     
          STOP                
-tab:     .BLOCK  56      ; un tableau d'entiers #1d56a 
-debord:  .BLOCK  1
-tabLen:  .EQUATE 56      ; taille de tab en octets 
+tab:     .BLOCK  56          ; un tableau d'entiers #1d56a
+debord:  .BLOCK  1           
+tabLen:  .EQUATE 56          ; taille de tab en octets
 ;
 ; readTab: lit un tableau d'entiers (de l'input)
 ; IN: A=tableau d'entiers (mots signés #2d)
@@ -19,64 +18,67 @@ lireTab: SUBSP   6,i         ; reserve var locales #taille #addrt #addrfin
          ADDX    addrt,s     
          STX     addrfin,s   ; addrfin = addrt + taille
          LDX     addrt,s     ; for (X=addrt; X<addrfin; X+=2) {
-         ADDX    2,i
+         ADDX    2,i         
 lire:    CPX     addrfin,s   
          BRGE    rTfin       ;fin de la saisie, le tableau est rempli  TROUVER un truc pour v/rifi/ au<il ne reste rien
-         CHARI   0,x    ;;
-         LDA     0,i
-         LDBYTEA 0,x    ;
-         SUBA    '0',i
-         STBYTEA  0,x
-         CPA     9,i
-         BRGT    erreur 
-         CPA     0,i
-         BRLT    erreur
-         
-         
-         LDA     count,d     ;charge le compteur de la taille des numeros de pieces 
+         CHARI   0,x         ;;
+         LDA     count,d     ;charge le compteur de la taille des numeros de pieces
          ADDA    1,i         ;incremente
          STA     count,d     ;sauve
-         
          CPA     7,i         ;verifie pour la pos du tiret
-         BREQ    checkTir 
-oktir:         CPA     9,i        ;verifie pour la pos max possible de la virgule
-         BREQ    checkVir
-okvir:         CPA     10,i        ;verifie pour la pos max possible de la virgule
-         BREQ    checkVir
-         BR      suit
+         BREQ    checkTir    
+         CPA     9,i         ;verifie pour la pos max possible de la virgule
+         BRNE    okvir       
+         CALL    checkVir    
+okvir:   CPA     10,i        ;verifie pour la pos max possible de la virgule
+         BRNE    num         
+         CALL    checkVir    
 ;
-checkTir: BR     oktir       
+num:     LDA     0,i         
+         LDBYTEA 0,x         ;
+         CPA     '9',i       
+         BRGT    erreur      
+         CPA     '0',i       
+         BRLT    erreur      
 ;
 ;
-checkVir: BR     okvir
-;
-         
-
-suit:         CPA     10,i        ; Lire un caractère.
-         BREQ    finSaisi      ;
-         
+suit:    CPA     '\n',i      ; Lire un caractère.
+         BREQ    finSaisi    ; ====       =NE PAS OUBLIE, ecraser ce entrer qui traine=     =====
+         SUBA    '0',i       
+         STBYTEA 0,x         
          ADDX    1,i         ;incr/menete pour placer le prochain carac
-         BR      lire
-finSaisi:STRO fini,d 
-         BR      rTfin           
+         BR      lire        
+finSaisi:STRO    fini,d      
+         BR      rTfin       
 ;
 ;
-erreur:  BR finSaisi
-
-
-
-
+;
          DECI    0,x         ;   *addrt = readInt();
          ADDX    2,i         
-         BR      lire    ; } // fin for 
+         BR      lire        ; } // fin for
 rTfin:   LDX     taille,s    ; restaure X
          RET6                ; libere #taille #addrt #addrfin
+;
+;
+; Verif======
+checkTir:LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     '-',i       
+         BRNE    erreur      
+         BR      lire        
+;
+;
+erreur:  BR      finSaisi    
+;
+;
+checkVir:RET0                
+;
 ;
 addrfin: .EQUATE 0           ; l'adresse de fin du tableau #2h
 addrt:   .EQUATE 2           ; l'adresse du tableau #2h
 taille:  .EQUATE 4           ; la taille du tableau en octets #2d
-fini:    .ASCII "fin de lecture\x00"
-count:   .WORD 0
+fini:    .ASCII  "fin de lecture\x00"
+count:   .WORD   0           
 ;
 ;
-         .END       
+         .END                  
