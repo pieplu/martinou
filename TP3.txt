@@ -29,10 +29,10 @@ lire:    CPX     addrfin,s
          BREQ    checkTir    
          CPA     9,i         ;verifie pour la pos max possible de la virgule
          BRNE    okvir       
-         CALL    checkVir    
+         CALL    checkVi1    ;#test
 okvir:   CPA     10,i        ;verifie pour la pos max possible de la virgule
          BRNE    num         
-         CALL    checkVir    
+         CALL    checkVi2    ;#test
 ;
 num:     LDA     0,i         
          LDBYTEA 0,x         ;
@@ -43,10 +43,10 @@ num:     LDA     0,i
 ;
 ;
 suit:    CPA     '\n',i      ; Lire un caractère.
-         BREQ    finSaisi    ; ====       =NE PAS OUBLIE, ecraser ce entrer qui traine=     =====
+         BREQ    finSaisi    ; ====       =NE PAS OUBLIE, ecraser ce entrer qui traine=      =====
          SUBA    '0',i       
          STBYTEA 0,x         
-         ADDX    1,i         ;incr/menete pour placer le prochain carac
+         ADDX    1,i         ;incremenete pour placer le prochain carac
          BR      lire        
 finSaisi:STRO    fini,d      
          BR      rTfin       
@@ -71,12 +71,28 @@ checkTir:LDA     0,i
 erreur:  BR      finSaisi    
 ;
 ;
-checkVir:RET0                
+checkVi1:LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     ',',i       
+         BREQ    bon         ; si c'est une virgule, donc fin de cette partie
+finVi1:  RET0                
 ;
+checkVi2:LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     ',',i       
+         BRNE    errVir      
+bon:     ADDSP   2,i         ;#test
+         
+         LDA     0,i         
+         STA     count,d     
+         BR      lire        
+;
+errVir:  RET0                ; ===        =A FAIRE  =============== attention, aux ret machin et cie
 ;
 addrfin: .EQUATE 0           ; l'adresse de fin du tableau #2h
 addrt:   .EQUATE 2           ; l'adresse du tableau #2h
 taille:  .EQUATE 4           ; la taille du tableau en octets #2d
+test:    .EQUATE 6           ; adresse de retour des sous-prog2 #2h
 fini:    .ASCII  "fin de lecture\x00"
 count:   .WORD   0           
 ;
