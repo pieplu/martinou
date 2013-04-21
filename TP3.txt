@@ -1,6 +1,6 @@
 ; Sous-programme qui lit un tableau d'entier
 ; -> utilise des vraies variables locales
-; Jean Privat (c) 2011
+; Jean Privat (c) 
 ;
 ; Programme principal. Invoque simplement la fonction.
          LDA     tab,i       
