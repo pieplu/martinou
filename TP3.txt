@@ -1,17 +1,25 @@
 ;
-; Programme principal. Invoque simplement la fonction.
-         LDA     tab,i       
-         LDX     tabLen,i    
+; TITRE:         "martinou"       TRI, programme du TP3 INF2170, hiver 2013
+; DATE:          22 avril 2013
+; AUTEURS:       Florient Baumont BAUF12059008    baumont.florian@courrier.uqam.ca
+;                Alexis Piéplu    PIEA07058900    pieplu.alexis@courrier.uqam.ca
+;
+; DESCRIPTION:   Programme qui tri un maximum de 5 numéros de pièce de monnaie.
+;
+         STRO    bienvenu,d 
+loop:    LDA     tab,i       
+         LDX     tabLen,i   
          CALL    lireTab     
          STOP                
-tab:     .BLOCK  56          ; un tableau d'entiers #1d56a
+tab:     .BLOCK  56          ; le tableau des numeros #1d56a
 debord:  .BLOCK  1           
-tabLen:  .EQUATE 56          ; taille de tab en octets
+tabLen:  .EQUATE 56          ; taille de tab
 ;
 ; readTab: lit un tableau d'entiers (de l'input)
 ; IN: A=tableau d'entiers (mots signés #2d)
 ;     X=taille du tableau en octets
 ; En cas de probleme de lecture, le programme s'arrete
+;
 lireTab: SUBSP   6,i         ; reserve var locales #taille #addrt #addrfin
          STA     addrt,s     ; sauvegarde le parametre A
          STX     taille,s    ; sauvegarde le parametre X
@@ -20,7 +28,7 @@ lireTab: SUBSP   6,i         ; reserve var locales #taille #addrt #addrfin
          LDX     addrt,s     ; for (X=addrt; X<addrfin; X+=2) {
          ADDX    2,i         
 lire:    CPX     addrfin,s   
-         BRGE    rTfin       ;fin de la saisie, le tableau est rempli  TROUVER un truc pour v/rifi/ au<il ne reste rien
+         BRGE    rTfin       ;fin de la saisie, le tableau est rempli  =====       =TROUVER un truc pour v/rifi/ au<il ne reste rien=   =====
          CHARI   0,x         ;;
          LDA     count,d     ;charge le compteur de la taille des numeros de pieces
          ADDA    1,i         ;incremente
@@ -60,11 +68,11 @@ rTfin:   LDX     taille,s    ; restaure X
          RET6                ; libere #taille #addrt #addrfin
 ;
 ;
-; Verif======
+; ---------Verif---------
 checkTir:LDA     0,i         
          LDBYTEA 0,x         
          CPA     '-',i       
-         BRNE    erreur      
+         BRNE    erreur    
          BR      lire        
 ;
 ;
@@ -75,26 +83,45 @@ checkVi1:LDA     0,i
          LDBYTEA 0,x         
          CPA     ',',i       
          BREQ    bon         ; si c'est une virgule, donc fin de cette partie
+         CPA     '\n',i
+         BREQ    nonVir      ; == A CHANGER, pour une etiquette du dessous ==         ==========
 finVi1:  RET0                
 ;
 checkVi2:LDA     0,i         
          LDBYTEA 0,x         
          CPA     ',',i       
-         BRNE    errVir      
-bon:     ADDSP   2,i         ;#test
-         
+         BRNE    nonVir      
+bon:     ADDSP   2,i         ; #test
+         STX     pointeur,d  ; sauve x
+         SUBX    count,d     ; vas a l'adresse de la longeur
+         LDA     count,d
+         SUBA    2,i         ; remet le compteur
+         STA     0,x         ; stock la longeur dans sa case
+         SUBX    1,i         ; case de l'opé suivant
+         ADDA    2,i         ; trouve l'adresse relative de l'opé suivant
+         STX     adressOp,d
+         ADDA    adressOp,d  ; trouve l'adresse reel
+         STA     0,x
          LDA     0,i         
-         STA     count,d     
+         STA     count,d     ; remet le comteur a zero, pour la suite des opérations
+         LDX     pointeur,d  ; recupere x
+         ADDX    2,i         ; place x pour la saisie du suivant
          BR      lire        
 ;
-errVir:  RET0                ; ===        =A FAIRE  =============== attention, aux ret machin et cie
+nonVir:  CPA     '\n',i
+         BRNE    erreur
+         ADDSP   2,i         ; #test 
+         RET6                ; libere #taille #addrt #addrfin 
 ;
 addrfin: .EQUATE 0           ; l'adresse de fin du tableau #2h
 addrt:   .EQUATE 2           ; l'adresse du tableau #2h
 taille:  .EQUATE 4           ; la taille du tableau en octets #2d
 test:    .EQUATE 6           ; adresse de retour des sous-prog2 #2h
 fini:    .ASCII  "fin de lecture\x00"
-count:   .WORD   0           
+bienvenu:.ASCII  "Bienvenue dans ce programme de TRI de numéros de pièce de monnaie\x00"
+count:   .WORD   0  
+pointeur:.WORD   0   
+adressOp:.WORD   0
 ;
 ;
          .END                  
