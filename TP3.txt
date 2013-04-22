@@ -92,19 +92,18 @@ checkVi2:LDA     0,i
          CPA     ',',i       
          BRNE    nonVir      
 bon:     ADDSP   2,i         ; #test
-         STX     pointeur,d  ; sauve x
+         STBYTEX pointeur,d  ; sauve x, adresse de la suite
          SUBX    count,d     ; vas a l'adresse de la longeur
+         ADDX    1,i         ; recalibre
          LDA     count,d
          SUBA    2,i         ; remet le compteur
-         STA     0,x         ; stock la longeur dans sa case
+         STBYTEA 0,x         ; stock la longeur dans sa case
          SUBX    1,i         ; case de l'opé suivant
-         ADDA    2,i         ; trouve l'adresse relative de l'opé suivant
-         STX     adressOp,d
-         ADDA    adressOp,d  ; trouve l'adresse reel
-         STA     0,x
+         LDBYTEA pointeur,d  ; trouve l'adresse relative de l'opé suivant
+         STBYTEA 0,x
          LDA     0,i         
          STA     count,d     ; remet le comteur a zero, pour la suite des opérations
-         LDX     pointeur,d  ; recupere x
+         LDBYTEX pointeur,d  ; recupere x
          ADDX    2,i         ; place x pour la saisie du suivant
          BR      lire        
 ;
@@ -120,8 +119,8 @@ test:    .EQUATE 6           ; adresse de retour des sous-prog2 #2h
 fini:    .ASCII  "fin de lecture\x00"
 bienvenu:.ASCII  "Bienvenue dans ce programme de TRI de numéros de pièce de monnaie\x00"
 count:   .WORD   0  
-pointeur:.WORD   0   
-adressOp:.WORD   0
+pointeur:.BYTE   0   
+
 ;
 ;
          .END                  
