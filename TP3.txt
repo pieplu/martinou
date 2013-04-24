@@ -20,6 +20,7 @@ tab:     .BLOCK  56          ; le tableau des numeros #1d56a
 debord:  .BLOCK  1           
 tabLen:  .EQUATE 56          ; taille de tab
 mTemp:   .BLOCK  9          ; maillon temp    #1d9a
+         .BLOCK  20          ; la sécu
 ;
 ;
 ; ----   GROS SOUS-PROGRAMME DE REMPLISSAGE  ----
@@ -202,8 +203,9 @@ copM2:   CPX     10,i
          BRGE    M1
          LDA     0,i
          LDBYTEA m2,sxf
+         SUBX    1,i
          STBYTEA mTemp,x
-         ADDX    1,i
+         ADDX    2,i
          BR      copM2
 M1:      LDX      1,i
 copM1:  CPX     10,i 
@@ -274,7 +276,7 @@ avInvers: .BLOCK   2 ; #2d1a
 debutTri:.WORD   0 
 long1:   .WORD   0     
 
-;;;;; ANCIEN PAS BIOEN
+;;;;; ANCIEN PAS BIEN
 long:    .WORD   0
 succ:    .WORD   0
 nb2:     .WORD   0
