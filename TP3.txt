@@ -194,9 +194,9 @@ invers:  STX     avInvers,d
          SUBX    1,i
          SUBSP   4,i           ; #m2 #m1 
          
-         STBYTEX m2,s        ;adresse maillon 2 
+         STX m2,s        ;adresse maillon 2 
          SUBX    10,i
-         STBYTEX m1,s        ;adresse maillon 1
+         STX m1,s        ;adresse maillon 1
          LDX     1,i
 copM2:   CPX     10,i
          BRGE    M1
