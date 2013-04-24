@@ -1,0 +1,89 @@
+TRI:     SUBSP   2,i           ; #premier 
+         STBYTEA addrt,s
+         LDX     tab,i
+         ADDX    1,i
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     long,d     ;stock le première longeure
+         ADDX    long,d
+         ADDX    1,i
+         STX     succ,d     ;stock le successeur
+         ADDX    1,i
+         LDA     0,i
+         LDBYTEA 0,x
+cklong: CPA     long,d      ; check longeure
+         BRGE    saut      ;si le deuxième doit passer avant  ;========= MODIF INVERS
+         CALL    invers
+saut:   CPA     long,d
+         BREQ    VerifVal
+;
+         BR
+;
+VerifVal:CPA     7,i
+         BREQ    val7
+         
+
+;
+;
+;
+
+
+val7:    ADDX    7,i         ;regarde le nb du deuxième
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     nb2,d         ; valeur du num du deuxième
+         LDX     succ,d
+         SUBX    1,i
+         LDA     0,i
+         LDBYTEA 0,x         ; valeur du num du premier
+         CPA     nb2,d
+         BRLE    saut1
+         CALL    invers      ;========= MODIF INVERS
+saut1:   CPA     nb2,d
+         BREQ    VeriDate
+         
+
+
+VeriDate:CALL    verDate
+         LDA     flagD,d
+         CPA     1,i
+         
+;       
+; ----   sous prog d'inversion   ----
+invers:  LDX     succ,d
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     temp,d
+         SUBX    long,d
+         SUBX    2,i
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     tempAV,d
+         LDA     temp,d
+         STBYTEA 0,x
+         STX     avancer,d
+         LDA     avancer,d
+         LDX     succ,d
+         STBYTEA 0,x
+; ----   trouve le maillon précedent lors d'une modification   ----
+trouver:LDX     tab,i                 ; MODIF A FAIRE, PAS BON pour le cas ou il n'y a rien avant
+loopind:LDBYTEA 0,x
+         CPA     avancer,d
+         BREQ    oui
+         CPX     addrfin
+         BREQ    sortir     
+         ADDX    1,i
+         BR      loopind
+oui:     LDA     tempAv,d
+         STBYTEA 0,x
+sortir: RET0
+
+
+
+
+
+
+
+
+
+         RET0                ; libere #premier           
