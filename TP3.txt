@@ -1,6 +1,6 @@
 ;
 ; TITRE:         "martinou"       TRI, programme du TP3 INF2170, hiver 2013
-; DATE:          22 avril 2013
+; DATE:          23 avril 2013
 ; AUTEURS:       Florient Baumont BAUF12059008    baumont.florian@courrier.uqam.ca
 ;                Alexis Piéplu    PIEA07058900    pieplu.alexis@courrier.uqam.ca
 ;
@@ -34,7 +34,7 @@ lireTab: SUBSP   6,i         ; reserve var locales #taille #addrt #addrfin
          LDX     addrt,s     ; for (X=addrt; X<addrfin; X+=2) {
          ADDX    2,i         
 lire:    CPX     addrfin,s   
-         BRGE    rTfin       ;fin de la saisie, le tableau est rempli  =====       =TROUVER un truc pour v/rifi/ au<il ne reste rien=   =====
+         BRGE    Lirfin       ;fin de la saisie, le tableau est rempli  =====       =TROUVER un truc pour v/rifi/ au<il ne reste rien=   ===== 
          CHARI   0,x         ;;
          LDA     count,d     ;charge le compteur de la taille des numeros de pieces
          ADDA    1,i         ;incremente
@@ -60,14 +60,14 @@ suit:    CPA     '\n',i      ; Lire un caractère.
          ADDX    1,i         ;incremenete pour placer le prochain carac
          BR      lire        
 finSaisi:STRO    fini,d      
-         BR      rTfin       
+         BR      Lirfin       
 ;
 ;
 ; ==========  AFFICHAGE A finir ==========
          DECI    0,x         ;   *addrt = readInt();
          ADDX    2,i         
          BR      lire        ; } // fin for
-rTfin:   LDX     taille,s    ; restaure X
+Lirfin:   LDX     taille,s    ; restaure X
          RET6                ; libere #taille #addrt #addrfin
 ;
 ;
