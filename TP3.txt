@@ -9,7 +9,7 @@
          STRO    bienvenu,d 
 loop:    LDA     tab,i       
          LDX     tabLen,i   
-         CALL    lireTab
+calllir: CALL    lireTab
          LDA     tab,i
          CALL    TRI     
          STOP 
@@ -32,7 +32,8 @@ lireTab: SUBSP   6,i         ; reserve var locales #taille #addrt #addrfin
          ADDX    addrt,s     
          STX     addrfin,s   ; addrfin = addrt + taille
          LDX     addrt,s     ; for (X=addrt; X<addrfin; X+=2) {
-         ADDX    2,i         
+         ADDX    2,i   
+         STRO    saisir,d      
 lire:    CPX     addrfin,s   
          BRGE    Lirfin       ;fin de la saisie, le tableau est rempli  =====       =TROUVER un truc pour v/rifi/ au<il ne reste rien=   ===== 
          CHARI   0,x         ;;
@@ -60,15 +61,17 @@ suit:    CPA     '\n',i      ; Lire un caractère.
          ADDX    1,i         ;incremenete pour placer le prochain carac
          BR      lire        
 finSaisi:STRO    fini,d      
-         BR      Lirfin       
-;
-;
-; ==========  AFFICHAGE A finir ==========
-         DECI    0,x         ;   *addrt = readInt();
-         ADDX    2,i         
-         BR      lire        ; } // fin for
+         
 Lirfin:   LDX     taille,s    ; restaure X
          RET6                ; libere #taille #addrt #addrfin
+;
+
+;
+;
+erreur:  STRO    msgErr,d
+         ADDSP   6,i             ; libere #taille #addrt #addrfin
+; FAIRE LE VIDE de la pile de char
+         BR      loop   ; ====   A FAIRE  === 
 ;
 ;
 ; ----   VERIFICATIONS   ----
@@ -79,7 +82,7 @@ checkTir:LDA     0,i
          CPA     '-',i       
          BRNE    erreur    
          BR      lire        
-erreur:  BR      finSaisi   ; ====   A FAIRE  === 
+
 ;
 checkVi1:LDA     0,i         
          LDBYTEA 0,x         
@@ -101,7 +104,7 @@ checkVi1:LDA     0,i
          LDBYTEX pointeur,d  ; recupere x
          ADDX    3,i         ; place x pour la saisie du suivant
          BR      lire                ; si c'est une virgule, donc fin de cette partie
-siVir2:CPA     '\n',i
+siVir2:  CPA     '\n',i
          BREQ    nonVir      ; == A CHANGER, pour une etiquette du dessous ==         ==========
 finVi1:  RET0                
 ;
@@ -261,8 +264,25 @@ addrt:   .EQUATE 2           ; l'adresse du tableau #2h
 taille:  .EQUATE 4           ; la taille du tableau en octets #2d
 test:    .EQUATE 6           ; adresse de retour des sous-prog2 #2h
 premier: .EQUATE 0           ; l'adresse du tableau début #2h
-fini:    .ASCII  "fin de lecture\x00"
-bienvenu:.ASCII  "Bienvenue dans ce programme de TRI de numéros de pièce de monnaie\n\x00"
+fini:    .ASCII  "\n"
+         .ASCII  "=========================================\n"
+         .ASCII  "               AU REVOIR\n"
+         .ASCII  "  À bientôt pour de nouvelles aventures\n"
+         .ASCII  "          avec PEP8 et ses amis\n"
+         .ASCII  "=========================================\x00"
+msgErr:  .ASCII  "Entrée invalide\n\x00"
+bienvenu:.ASCII  "=========================================\n"
+         .ASCII  "                 MARTINOU\n"
+         .ASCII  "-----------------------------------------\n"
+         .ASCII  "    Bienvenue dans ce programme de TRI\n"
+         .ASCII  "      de numéros de pièce de monnaie\n"
+         .ASCII  "-----------------------------------------\n"
+         .ASCII  "Entrez-les à la suite les uns des autres\n"
+         .ASCII  "séparé d'une virgule et fini par 'entrer'\n"
+         .ASCII  "  saisissez juste 'entrer' pour quitter\n"
+         .ASCII  "            Maximum 5 numéros\n"
+         .ASCII  "=========================================\n\x00"
+saisir:  .ASCII  "Entrez un ou plusieurs numéros de pièces:\n\x00"
 count:   .WORD   0  
 pointeur:.BYTE   0 
 ;
