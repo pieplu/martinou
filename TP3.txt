@@ -190,6 +190,79 @@ sautb2: SUBX     1,i
          CPA     0,i
          BREQ    Bubble
          BR      loopBu
+
+ 
+compVal: LDA     0,i                                                ;;;;;;;;;;;; FLOOOOOOOOOO ;;;;;;;;;;;
+                  
+         ADDX    10,i                                               ;
+         SUBX    2,i                                                ;
+         LDBYTEA 0,x                                                ;
+         STA     val1,d                                             ;
+         LDA     0,i                                                ;
+         LDA     long1,d                                            ;
+         CPA     8                                                  ;
+         BREQ    comp2Val                                           ;
+         LDA     0,i                                                ;
+         ADDX    10,i                                               ;
+         SUBX    1,i                                                ;
+         LDBYTEA 0,x                                                ;
+         CPA     val1,d                                             ;
+         BRGT    correc                                             ;
+         CPA     val1,d                                             ;
+         BRLT    switch                                             ;
+         CPA     val1,d                                             ;
+         BREQ    nextver                                            ;
+
+comp2Val:ADDX    1,i                                                ;
+         LDBYTEA 0,x                                                ;
+         STA     val2,d                                             ;
+         LDA     0,i                                                ;
+         ADDX    10,i                                               ;
+         SUBX    1,i                                                ;
+         LDBYTEA 0,x                                                ;
+         CPA     val1,d                                             ;
+         BRGT    correc                                             ;
+         CPA     val1,d                                             ;
+         BRLT    switch                                             ;
+         ADDX    1,i                                                ;
+         LDBYTEA  0,x                                               ;
+         CPA     val2,d                                             ;
+         BRGT    correc                                             ;
+         CPA     val2,d                                             ;
+         BRLT    switch                                             ;
+         BR      nextver                                            ;
+              
+         
+switch:  call    invers                                             ;
+         BR      correc                                             ;
+nextver: call    compLong                                           ; 
+correc:  NOP0                    ;;; DOIT RETOURNER AU TRI ;;;      
+         
+comp2Val:ADDX    1,i                                                ;
+         LDBYTEA 0,x                                                ;
+         STA     val2,d                                             ;
+         LDA     0,i                                                ;
+         ADDX    10,i                                               ;
+         SUBX    1,i                                                ;
+         LDBYTEA 0,x                                                ;
+         CPA     val1,d                                             ;                                               
+         BRGT    correc                                             ;;;;;;;;;;;;; FLOOOOOOOOOO ;;;;;;;;;;;
+         
+
+
+
+         
+
+         
+         
+         
+         
+
+         
+         
+         
+         
+         
  
 ;
 ;
