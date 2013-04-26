@@ -70,8 +70,12 @@ Lirfin:  LDX     taille,s    ; restaure X
 ;
 erreur:  STRO    msgErr,d    
          ADDSP   6,i         ; libere #taille #addrt #addrfin
-; FAIRE LE VIDE de la pile de char
-         BR      loop        ; ====   A FAIRE  ===
+videFake:CHARI   fake,d      ; vide la pile de char 
+         LDA     0,i
+         LDBYTEA fake,d
+         CPA     '\n',i
+         BREQ    loop
+         BR      videFake       ; ====   A FAIRE  ===
 ;
 ;
 ; ----   VERIFICATIONS   ----
@@ -510,7 +514,9 @@ bienvenu:.ASCII  "=========================================\n"
 saisir:  .ASCII  "Entrez un ou plusieurs numéros de pièces:\n\x00"
 fleche:  .ASCII  " --> \x00" 
 count:   .WORD   0           
-pointeur:.BYTE   0           
+pointeur:.BYTE   0 
+;
+fake:    .BYTE   0          
 ;
 m2:      .EQUATE 0           ; adresse du maillon 2 a inverser #2h
 m1:      .EQUATE 2           ; adresse du maillon 1 a inverser #2h
