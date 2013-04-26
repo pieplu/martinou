@@ -13,14 +13,15 @@ calllir: CALL    lireTab
          LDA     tab,i       
          CALL    TRI         
          CALL    AFFICHE
+         CALL    NETOYER 
          BR      loop     
 aurevoir:STOP                
 ;
 ; ----   LE TABLEAU   ----
 ; ------------------------
-tab:     .BLOCK  56          ; le tableau des numeros #1d56a
-debord:  .BLOCK  1           
 tabLen:  .EQUATE 56          ; taille de tab
+tab:     .BLOCK  56          ; le tableau des numeros #1d56a
+debord:  .BLOCK  1          
 mTemp:   .BLOCK  9           ; maillon temp    #1d9a
          .BLOCK  20          ; la sécu
 ;
@@ -52,24 +53,29 @@ okvir:   CPA     10,i        ;verifie pour la pos max possible de la virgule
          CALL    checkVi2    ;#test
 num:     LDA     0,i         
          LDBYTEA 0,x         ;
+         CPA     '\n',i      ; Lire un caractère.
+         BREQ    finSaisi    ; ====       =NE PAS OUBLIE, ecraser ce entrer qui traine=      =====
          CPA     '9',i       
          BRGT    erreur      
          CPA     '0',i       
-         BRLT    erreur      
-suit:    CPA     '\n',i      ; Lire un caractère.
-         BREQ    finSaisi    ; ====       =NE PAS OUBLIE, ecraser ce entrer qui traine=      =====
+         BRLT    erreur     
+         NOP0          
          SUBA    '0',i       
          STBYTEA 0,x         
          ADDX    1,i         ;incremenete pour placer le prochain carac
          BR      lire        
-finSaisi:STRO    fini,d      
+     
 Lirfin:  LDX     taille,s    ; restaure X
          RET6                ; libere #taille #addrt #addrfin
+
+finSaisi:STRO    fini,d 
+         BR      aurevoir
 ;
 ;
 ;
 erreur:  STRO    msgErr,d    
          ADDSP   6,i         ; libere #taille #addrt #addrfin
+         CALL    NETOYER
 videFake:CHARI   fake,d      ; vide la pile de char 
          LDA     0,i
          LDBYTEA fake,d
@@ -486,6 +492,42 @@ endPrint:ADDX    1,i
          BR      finAff      ;saut pour boucle maillon
 aff8f:   CALL    print8      
 finAff:  RET0                ; retour du prog affichage
+
+;;;;;;;; SOUS- PROGRAMME DE NETOYAGE ;;;;;;;;;
+
+NETOYER: LDX      0,i
+lClean:  CPX      64,i
+         BRGT     endClean
+         LDA      0,i
+         STA      tab,x
+         ADDX     2,i
+         BR      lClean
+
+endClean:LDA 0,i
+         STBYTEA fake,d
+         STBYTEA pointeur,d
+         STA count,d
+         STA count7,d
+         STA count8,d
+         STA debutAff,d
+         STA AavVal,d         
+         STA XavVal,d
+         
+         STA flagI,d         
+         STA avInveX,d
+         STA avInveA,d
+         STA debutTri,d          
+         STA long1,d
+         STA XavPrint,d 
+         LDX 0,i 
+         RET0
+         
+
+
+
+
+
+
 ;
 ;
 addrfin: .EQUATE 0           ; l'adresse de fin du tableau #2h
@@ -511,7 +553,7 @@ bienvenu:.ASCII  "=========================================\n"
          .ASCII  "  saisissez juste 'entrer' pour quitter\n"
          .ASCII  "            Maximum 5 numéros\n"
          .ASCII  "=========================================\n\x00"
-saisir:  .ASCII  "Entrez un ou plusieurs numéros de pièces:\n\x00"
+saisir:  .ASCII  "\nEntrez un ou plusieurs numéros de pièces:\n\x00"
 fleche:  .ASCII  " --> \x00" 
 count:   .WORD   0           
 pointeur:.BYTE   0 
