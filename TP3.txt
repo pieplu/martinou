@@ -191,7 +191,9 @@ checkVi1:LDA     0,i
          LDBYTEA pointeur,d  ; trouve l'adresse relative de l'opé suivant
          ADDA    1,i         
          STBYTEA 0,x         
-         LDA     0,i         
+         LDA     0,i
+         STA     flagMoi,d   ;nettoie les fags apres un maillon entrée
+         STA     flagJour,d  ;nettoie les fags apres un maillon entrée      
          STA     count,d     ; remet le comteur a zero, pour la suite des opérations
          LDBYTEX pointeur,d  ; recupere x
          ADDX    3,i         ; place x pour la saisie du suivant
@@ -214,7 +216,9 @@ bon:     ADDSP   2,i         ; #test
          SUBX    1,i         ; case de l'opé suivant
          LDBYTEA pointeur,d  ; trouve l'adresse relative de l'opé suivant
          STBYTEA 0,x         
-         LDA     0,i         
+         LDA     0,i
+         STA     flagMoi,d   ;nettoie les fags apres un maillon entrée
+         STA     flagJour,d  ;nettoie les fags apres un maillon entrée         
          STA     count,d     ; remet le comteur a zero, pour la suite des opérations
          LDBYTEX pointeur,d  ; recupere x
          ADDX    2,i         ; place x pour la saisie du suivant
