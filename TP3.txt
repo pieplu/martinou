@@ -160,7 +160,7 @@ SfinTab: STBYTEX pointeur,d  ; sauve x, adresse de la suite
          STBYTEA 0,x         ; met 0 pour l'opé suivant (C'est la fin)
          STA     count,d     ; remet le comteur a zero, pour la suite des opérations
          LDBYTEX pointeur,d  ; recupere x
-         RET0                
+         RET0               
 ;
 ;
 ;
@@ -171,6 +171,11 @@ SfinTab: STBYTEX pointeur,d  ; sauve x, adresse de la suite
 TRI:     NOP0                
 ;SUBSP   2,i         ; #premier
 ;STBYTEA addrt,s
+         LDX     tab,i
+         LDA     0,i
+         LDBYTEA 0,x
+         CPA     0,i
+         BREQ    unMAil
          BR      premTri     
 Bubble:  LDA     flagI,d     
          CPA     0,i         
@@ -199,7 +204,10 @@ sautb2:  SUBX    1,i
          LDBYTEA 0,x         
          CPA     0,i         
          BREQ    Bubble      
-         BR      loopBu      
+         BR      loopBu 
+         
+unMAil:  RET0
+              
 ;
 ;
 ;;;;;;; SOUS PROGRAMME QUI CHECK LES VALEURS (pis la date)
