@@ -38,7 +38,10 @@ lireTab: SUBSP   6,i         ; reserve var locales #taille #addrt #addrfin
          ADDX    2,i         
          STRO    saisir,d    
 lire:    CPX     addrfin,s   
-         BRGE    Lirfin      ;fin de la saisie, le tableau est rempli  =====       =TROUVER un truc pour v/rifi/ au<il ne reste rien=   =====
+         BRGE    erreur      ;fin de la saisie, le tableau est rempli
+         LDA     nbMaill,d 
+         CPA     4,i
+         BRGT    erreur 
          CHARI   0,x         ;;
          LDA     count,d     ;charge le compteur de la taille des numeros de pieces
          ADDA    1,i         ;incremente
@@ -184,6 +187,9 @@ checkVi1:LDA     0,i
          STBYTEX pointeur,d  ; sauve x, adresse de la suite
          SUBX    count,d     ; vas a l'adresse de la longeur
          ADDX    1,i         ; recalibre
+         LDA     nbMaill,d   ; regarde le nombre de maillon entre
+         ADDA    1,i
+         STA     nbMaill,d
          LDA     count,d     
          SUBA    2,i         ; remet le compteur
          STBYTEA 0,x         ; stock la longeur dans sa case
@@ -210,6 +216,9 @@ bon:     ADDSP   2,i         ; #test
          STBYTEX pointeur,d  ; sauve x, adresse de la suite
          SUBX    count,d     ; vas a l'adresse de la longeur
          ADDX    1,i         ; recalibre
+         LDA     nbMaill,d   ; regarde le nombre de maillon entre
+         ADDA    1,i
+         STA     nbMaill,d
          LDA     count,d     
          SUBA    2,i         ; remet le compteur
          STBYTEA 0,x         ; stock la longeur dans sa case
@@ -607,7 +616,7 @@ endClean:LDA 0,i
          STA debutAff,d
          STA AavVal,d         
          STA XavVal,d
-         
+         STA     nbMaill,d   ;nettoie le nb maillon
          STA flagI,d         
          STA avInveX,d
          STA avInveA,d
@@ -654,7 +663,8 @@ saisir:  .ASCII  "\nEntrez un ou plusieurs numéros de pièces:\n\x00"
 fleche:  .ASCII  " --> \x00" 
 count:   .WORD   0
 flagMoi: .WORD   0
-flagJour:.WORD   0           
+flagJour:.WORD   0
+nbMaill: .WORD   0           
 pointeur:.BYTE   0 
 ;
 fake:    .BYTE   0          
