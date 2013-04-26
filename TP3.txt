@@ -6,20 +6,21 @@
 ;
 ; DESCRIPTION:   Programme qui tri un maximum de 5 numéros de pièce de monnaie.
 ;
-         STRO    bienvenu,d 
+         STRO    bienvenu,d  
 loop:    LDA     tab,i       
-         LDX     tabLen,i   
-calllir: CALL    lireTab
-         LDA     tab,i
-         CALL    TRI     
-         STOP 
+         LDX     tabLen,i    
+calllir: CALL    lireTab     
+         LDA     tab,i       
+         CALL    TRI
+         CALL    AFFICHE         
+         STOP                
 ;
 ; ----   LE TABLEAU   ----
-; ------------------------            
+; ------------------------
 tab:     .BLOCK  56          ; le tableau des numeros #1d56a
 debord:  .BLOCK  1           
 tabLen:  .EQUATE 56          ; taille de tab
-mTemp:   .BLOCK  9          ; maillon temp    #1d9a
+mTemp:   .BLOCK  9           ; maillon temp    #1d9a
          .BLOCK  20          ; la sécu
 ;
 ;
@@ -32,10 +33,10 @@ lireTab: SUBSP   6,i         ; reserve var locales #taille #addrt #addrfin
          ADDX    addrt,s     
          STX     addrfin,s   ; addrfin = addrt + taille
          LDX     addrt,s     ; for (X=addrt; X<addrfin; X+=2) {
-         ADDX    2,i   
-         STRO    saisir,d      
+         ADDX    2,i         
+         STRO    saisir,d    
 lire:    CPX     addrfin,s   
-         BRGE    Lirfin       ;fin de la saisie, le tableau est rempli  =====       =TROUVER un truc pour v/rifi/ au<il ne reste rien=   ===== 
+         BRGE    Lirfin      ;fin de la saisie, le tableau est rempli  =====       =TROUVER un truc pour v/rifi/ au<il ne reste rien=   =====
          CHARI   0,x         ;;
          LDA     count,d     ;charge le compteur de la taille des numeros de pieces
          ADDA    1,i         ;incremente
@@ -61,17 +62,15 @@ suit:    CPA     '\n',i      ; Lire un caractère.
          ADDX    1,i         ;incremenete pour placer le prochain carac
          BR      lire        
 finSaisi:STRO    fini,d      
-         
-Lirfin:   LDX     taille,s    ; restaure X
+Lirfin:  LDX     taille,s    ; restaure X
          RET6                ; libere #taille #addrt #addrfin
 ;
-
 ;
 ;
-erreur:  STRO    msgErr,d
-         ADDSP   6,i             ; libere #taille #addrt #addrfin
+erreur:  STRO    msgErr,d    
+         ADDSP   6,i         ; libere #taille #addrt #addrfin
 ; FAIRE LE VIDE de la pile de char
-         BR      loop   ; ====   A FAIRE  === 
+         BR      loop        ; ====   A FAIRE  ===
 ;
 ;
 ; ----   VERIFICATIONS   ----
@@ -80,31 +79,30 @@ erreur:  STRO    msgErr,d
 checkTir:LDA     0,i         
          LDBYTEA 0,x         
          CPA     '-',i       
-         BRNE    erreur    
+         BRNE    erreur      
          BR      lire        
-
 ;
 checkVi1:LDA     0,i         
          LDBYTEA 0,x         
          CPA     ',',i       
-         BRNE    siVir2
+         BRNE    siVir2      
          ADDSP   2,i         ; #test
          STBYTEX pointeur,d  ; sauve x, adresse de la suite
          SUBX    count,d     ; vas a l'adresse de la longeur
          ADDX    1,i         ; recalibre
-         LDA     count,d
+         LDA     count,d     
          SUBA    2,i         ; remet le compteur
          STBYTEA 0,x         ; stock la longeur dans sa case
          SUBX    1,i         ; case de l'opé suivant
          LDBYTEA pointeur,d  ; trouve l'adresse relative de l'opé suivant
-         ADDA    1,i
-         STBYTEA 0,x
+         ADDA    1,i         
+         STBYTEA 0,x         
          LDA     0,i         
          STA     count,d     ; remet le comteur a zero, pour la suite des opérations
          LDBYTEX pointeur,d  ; recupere x
          ADDX    3,i         ; place x pour la saisie du suivant
-         BR      lire                ; si c'est une virgule, donc fin de cette partie
-siVir2:  CPA     '\n',i
+         BR      lire        ; si c'est une virgule, donc fin de cette partie
+siVir2:  CPA     '\n',i      
          BREQ    nonVir      ; == A CHANGER, pour une etiquette du dessous ==         ==========
 finVi1:  RET0                
 ;
@@ -116,42 +114,42 @@ bon:     ADDSP   2,i         ; #test
          STBYTEX pointeur,d  ; sauve x, adresse de la suite
          SUBX    count,d     ; vas a l'adresse de la longeur
          ADDX    1,i         ; recalibre
-         LDA     count,d
+         LDA     count,d     
          SUBA    2,i         ; remet le compteur
          STBYTEA 0,x         ; stock la longeur dans sa case
          SUBX    1,i         ; case de l'opé suivant
          LDBYTEA pointeur,d  ; trouve l'adresse relative de l'opé suivant
-         STBYTEA 0,x
+         STBYTEA 0,x         
          LDA     0,i         
          STA     count,d     ; remet le comteur a zero, pour la suite des opérations
          LDBYTEX pointeur,d  ; recupere x
          ADDX    2,i         ; place x pour la saisie du suivant
          BR      lire        
 ;
-nonVir:  CPA     '\n',i
-         BRNE    erreur
-         CALL    SfinTab
-         LDA     0,i
+nonVir:  CPA     '\n',i      
+         BRNE    erreur      
+         CALL    SfinTab     
+         LDA     0,i         
          STBYTEA 0,x         ; ecrase le 10 qui traine
-         ADDSP   2,i         ; #test 
-         RET6                ; libere #taille #addrt #addrfin 
+         ADDSP   2,i         ; #test
+         RET6                ; libere #taille #addrt #addrfin
 ;
 ;
-; --- SOUS PROGRAMME --- 
+; --- SOUS PROGRAMME ---
 ; qui donne l'adresse de fin et la longeur du dernier maillion
 ; ----------------------
-SfinTab:STBYTEX pointeur,d  ; sauve x, adresse de la suite
+SfinTab: STBYTEX pointeur,d  ; sauve x, adresse de la suite
          SUBX    count,d     ; vas a l'adresse de la longeur
          ADDX    1,i         ; recalibre
-         LDA     count,d
+         LDA     count,d     
          SUBA    2,i         ; remet le compteur
          STBYTEA 0,x         ; stock la longeur dans sa case
          SUBX    1,i         ; case de l'opé suivant
-         LDA     0,i  
+         LDA     0,i         
          STBYTEA 0,x         ; met 0 pour l'opé suivant (C'est la fin)
          STA     count,d     ; remet le comteur a zero, pour la suite des opérations
          LDBYTEX pointeur,d  ; recupere x
-         RET0
+         RET0                
 ;
 ;
 ;
@@ -159,177 +157,310 @@ SfinTab:STBYTEX pointeur,d  ; sauve x, adresse de la suite
 ;
 ; ----   TRI   ----
 ;
-TRI:     SUBSP   2,i           ; #premier 
-         STBYTEA addrt,s
-         BR      premTri
-Bubble:  LDA     flagI,d
-         CPA     0,i
-         BREQ    trifini 
-premTri:LDA     0,i
-         STA     flagI,d
-         LDX     tab,i
-         STX     debutTri,d 
-loopBu:  LDX     debutTri,d
-         ADDX    1,i
+TRI:     NOP0
+         ;SUBSP   2,i         ; #premier
+         ;STBYTEA addrt,s     
+         BR      premTri     
+Bubble:  LDA     flagI,d     
+         CPA     0,i         
+         BREQ    trifini     
+premTri: LDA     0,i         
+         STA     flagI,d     
+         LDX     tab,i       
+         STX     debutTri,d  
+loopBu:  LDX     debutTri,d  
+         ADDX    1,i         
+         LDA     0,i         
+         LDBYTEA 0,x         
+         STA     long1,d     
+         ADDX    10,i        
+         LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     long1,d     
+         BRNE    sautb1      
+         CALL    compVal     
+sautb1:  CPA     long1,d     
+         BRGE    sautb2      
+         CALL    invers      
+sautb2:  SUBX    1,i         
+         STX     debutTri,d  
+         LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     0,i         
+         BREQ    Bubble      
+         BR      loopBu      
+;
+;
+;;;;;;; SOUS PROGRAMME QUI CHECK LES VALEURS (pis la date)
+compVal: STA     AavVal,d    
+         STX     XavVal,d    
+         SUBX    3,i         
+         LDA     0,i         
+         LDBYTEA 0,x         
+         STA     val1,d      
+         ADDX    10,i        
+         LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     val1,d      
+         BRGE    ComVsui     
+         BR      switch      
+ComVsui:CPA     val1,d      
+         BREQ    comVsui1    
+         BR      correc      
+;
+comVsui1:LDA     long1,d     
+         CPA     7,i         
+         BREQ    compDat     
+         SUBX    9,i         
+         LDA     0,i         
+         LDBYTEA 0,x         
+         STA     val2,d      
+         ADDX    10,i        
+         LDA     0,i         
+         LDBYTEA 0,x         
+         
+         CPA     val2,d      
+         BRLT    switch      
+
+         CPA     val2,d      
+         BREQ    compDat     
+         BR      correc      
+;
+;
+;;;;;;;;   general, pour les comparaisons ;;;;;;;;;;;;;;;;
+switch:  CALL    invers      
+         BR      correc      
+;
+correc:  LDA     AavVal,d    ; pour les cas ou c'est ben correc :D ET/OU la fin de la comparaison
+         LDX     XavVal,d    
+         RET0                
+;;;;;;;  fin general pour les compa ;;;;;;;;;;;;;;;;
+;
+;
+;--- COMPARAISON de LA DATE  ----
+compDat: LDX     debutTri,d    
+         ADDX    3,i         
          LDA     0,i
          LDBYTEA 0,x
-         STA     long1,d 
+         STA     c1m1,d      ; carac 1 maillon 1
          ADDX    10,i
          LDA     0,i
          LDBYTEA 0,x
-         CPA     long1,d
-         BRNE    sautb1
-         CALL    compVal
-sautb1: CPA     long1,d
-         BRGE    sautb2
-         CALL    invers
-sautb2: SUBX     1,i
-         STX     debutTri,d  
+         STA     c1m2,d      ; carac 1 maillon 2 
+         CPA     8,i
+         BRGE    a80m2       ; année 80 pour le m2
+         LDA     c1m1,d
+         CPA     8,i
+         BRLT    both
+         BR      correc
+;
+a80m2:  LDA     c1m1,d 
+         CPA     8,i
+         BRGE    both
+         BR      switch
+;
+both:    LDA      c1m1,d
+         CPA     c1m2,d
+         BREQ    cpAnC2      ; compare année carac 2
+         CPA     c1m2,d
+         BRGT    switch
+         BR      correc     
+;
+;;;; ANNEE caractere 2 ;;;
+cpAnC2: LDX     debutTri,d    
+         ADDX    4,i         
          LDA     0,i
          LDBYTEA 0,x
+         STA     c2m1,d      ; carac 2 maillon 1 
+         ADDX    10,i
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     c2m2,d      ; carac 2 maillon 2
+         CPA     c2m1,d      
+         BREQ    cpMois1
+         CPA     c2m1,d
+         BRLT    switch
+         BR      correc
+;
+;;;; MOIS caractere 1 ;;;
+cpMois1:LDX     debutTri,d    
+         ADDX    5,i         
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     c3m1,d      ; carac 3 maillon 1
+         ADDX    10,i
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     c3m2,d      ; carac 3 maillon 2
+         CPA     c3m1,d
+         BREQ    cpMois2
+         CPA     c3m1,d
+         BRLT    switch
+         BR      correc  
+;
+;;;; MOIS caractere 2 ;;;
+cpMois2:LDX     debutTri,d    
+         ADDX    6,i         
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     c4m1,d      ; carac 4 maillon 1
+         ADDX    10,i
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     c4m2,d      ; carac 4 maillon 2
+         CPA     c4m1,d
+         BREQ    cpJour1
+         CPA     c4m1,d
+         BRLT    switch
+         BR      correc
+;
+;;;; JOUR caractere 1 ;;;
+cpJour1:LDX     debutTri,d    
+         ADDX    7,i         
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     c5m1,d      ; carac 5 maillon 1
+         ADDX    10,i
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     c5m2,d      ; carac 5 maillon 2
+         CPA     c5m1,d
+         BREQ    cpJour2
+         CPA     c5m1,d
+         BRLT    switch
+         BR      correc
+;
+;;;; JOUR caractere 2 ;;;
+cpJour2:LDX     debutTri,d    
+         ADDX    8,i         
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     c6m1,d      ; carac 6 maillon 1
+         ADDX    10,i
+         LDA     0,i
+         LDBYTEA 0,x
+         STA     c6m2,d      ; carac 6 maillon 2
+         CPA     c6m1,d
+         BRLT    switch
+         BR      correc
+;          
+;
+;;;;; SOUS PROGRAMME D'INVERSION   ;;;;;
+invers:  NOP0
+         STX     avInveX,d   ;NESSESITE X sur la longeur du 2eme maillon
+         STA     avInveA,d
+         SUBSP   4,i         ; #m2 #m1
+         LDX     debutTri,d  
+         STX     m1,s        ;adresse maillon 1 
+         ADDX    10,i        
+         STX     m2,s        ;adresse maillon 2
+         LDX     1,i         
+copM2:   CPX     10,i        
+         BRGE    M1          
+         LDA     0,i         
+         LDBYTEA m2,sxf      
+         SUBX    1,i         
+         STBYTEA mTemp,x     
+         ADDX    2,i         
+         BR      copM2       
+M1:      LDX     1,i         
+copM1:   CPX     10,i        
+         BRGE    tTemp       
+         LDA     0,i         
+         LDBYTEA m1,sxf      
+         STBYTEA m2,sxf      
+         ADDX    1,i         
+         BR      copM1       
+;
+tTemp:   LDX     0,i         
+copTemp: CPX     9,i         
+         BRGE    finInver    
+         LDA     0,i         
+         LDBYTEA mTemp,x     
+         ADDX    1,i         
+         STBYTEA m1,sxf      
+         BR      copTemp     
+;
+finInver:LDA     1,i         
+         STA     flagI,d     
+         LDA     avInveA,d   ;restaure a
+         LDX     avInveX,d   ;restaure x
+         RET4                ; libere #m2 #m1
+;;;;; FIN du sous prog inversion   ;;;;;
+;
+
+trifini: RET0                ; liberre #premier
+;
+;;;;;;;;;;;;;;; FIN DU SOUS - PROG DE TRI  ;;;;;;;;;;;;;;;;;;;;;
+;
+;
+;
+;;;;;;;;;;;;;; SOUS-PROG D'AFFICHAGE ;;;;;;;;;;;;;;;
+;
+AFFICHE:LDX      tab,i
+maillsui: STX     debutAff,d
+         LDA     0,i
+         LDBYTEA 0,x 
          CPA     0,i
-         BREQ    Bubble
-         BR      loopBu
-
- 
-compVal: LDA     0,i                                                ;;;;;;;;;;;; FLOOOOOOOOOO ;;;;;;;;;;;
-                  
-         ADDX    10,i                                               ;
-         SUBX    2,i                                                ;
-         LDBYTEA 0,x                                                ;
-         STA     val1,d                                             ;
-         LDA     0,i                                                ;
-         LDA     long1,d                                            ;
-         CPA     8                                                  ;
-         BREQ    comp2Val                                           ;
-         LDA     0,i                                                ;
-         ADDX    10,i                                               ;
-         SUBX    1,i                                                ;
-         LDBYTEA 0,x                                                ;
-         CPA     val1,d                                             ;
-         BRGT    correc                                             ;
-         CPA     val1,d                                             ;
-         BRLT    switch                                             ;
-         CPA     val1,d                                             ;
-         BREQ    nextver                                            ;
-
-comp2Val:ADDX    1,i                                                ;
-         LDBYTEA 0,x                                                ;
-         STA     val2,d                                             ;
-         LDA     0,i                                                ;
-         ADDX    10,i                                               ;
-         SUBX    1,i                                                ;
-         LDBYTEA 0,x                                                ;
-         CPA     val1,d                                             ;
-         BRGT    correc                                             ;
-         CPA     val1,d                                             ;
-         BRLT    switch                                             ;
-         ADDX    1,i                                                ;
-         LDBYTEA  0,x                                               ;
-         CPA     val2,d                                             ;
-         BRGT    correc                                             ;
-         CPA     val2,d                                             ;
-         BRLT    switch                                             ;
-         BR      nextver                                            ;
-              
-         
-switch:  call    invers                                             ;
-         BR      correc                                             ;
-nextver: call    compLong                                           ; 
-correc:  NOP0                    ;;; DOIT RETOURNER AU TRI ;;;      
-         
-comp2Val:ADDX    1,i                                                ;
-         LDBYTEA 0,x                                                ;
-         STA     val2,d                                             ;
-         LDA     0,i                                                ;
-         ADDX    10,i                                               ;
-         SUBX    1,i                                                ;
-         LDBYTEA 0,x                                                ;
-         CPA     val1,d                                             ;                                               
-         BRGT    correc                                             ;;;;;;;;;;;;; FLOOOOOOOOOO ;;;;;;;;;;;
-         
-
-
-
-         
-
-         
-         
-         
-         
-
-         
-         
-         
-         
-         
- 
-;
-;
-;;;;; SOUS PROGRAMME D'INVERSION   ;;;;;     
-invers:  STX     avInvers,d 
-         SUBX    1,i
-         SUBSP   4,i           ; #m2 #m1 
-         
-         STX m2,s        ;adresse maillon 2 
-         SUBX    10,i
-         STX m1,s        ;adresse maillon 1
-         LDX     1,i
-copM2:   CPX     10,i
-         BRGE    M1
+         BREQ    endPrint
+         ADDX    1,i
          LDA     0,i
-         LDBYTEA m2,sxf
-         SUBX    1,i
-         STBYTEA mTemp,x
+         LDBYTEA 0,x
+         CPA     8,i
+         BREQ    aff8
+         CALL    print7
+         BR      loopMail    ;saut pour boucle maillon 
+aff8:    CALL    print8
+loopMail:ADDX    10,i
+         STRO    fleche,d   
+         BR      maillsui  
+
+
+;
+;;;;; SOUS prog d'affichage d'un maillon a 7 caracs  ;;;;;;
+print7: LDX      debutAff,d
          ADDX    2,i
-         BR      copM2
-M1:      LDX      1,i
-copM1:  CPX     10,i 
-         BRGE    tTemp
          LDA     0,i
-         LDBYTEA m1,sxf
-         STBYTEA m2,sxf
+aff7p1:  CPA     6,i
+         BRGE    aff7p2
+         CHARO   0,x
          ADDX    1,i
-         BR      copM1
- ;              
-tTemp:   LDX      0,i
-copTemp:CPX     9,i 
-         BRGE    finInver
-         LDA     0,i
-         LDBYTEA mTemp,x
+         ADDA    1,i
+         BR      aff7p1      ; Loop affichage maillon a 7 carac Date (partie 1)
+aff7p2: CHARO  '-',i
          ADDX    1,i
-         STBYTEA m1,sxf
-         BR      copTemp
-;
-finInver:LDX     avInvers,d  ;restaure x
-         LDA     1,i
-         STA     flagI,d
-         RET4    ; libere #m2 #m1 
-;;;;; FIN du sous prog inversion   ;;;;; 
-
-
-;;;;;; SOUS PROGRAMME QUI COMPARE LES VALEURS
-compVal: NOP0
-
-
-
-
-
-trifini:RET2 ; liberre #premier 
+         CHARO   0,x
+         RET0                ;retour du  sous prog aff maillon a 7 carac
 
 ;
+;;;;; SOUS prog d'affichage d'un maillon a 8 caracs  ;;;;;;
+print8:LDX      debutAff,d
+         ADDX    2,i
+         LDA     0,i
+aff8p1:  CPA     6,i
+         BRGE    aff7p2
+         CHARO   0,x
+         ADDX    1,i
+         ADDA    1,i
+         BR      aff7p1      ; Loop affichage maillon a 8 carac Date (partie 1)
+aff8p2: CHARO  '-',i
+         ADDX    1,i
+         CHARO   0,x
+         ADDX    1,i
+         CHARO   0,x
+         RET0                ;retour du  sous prog aff maillon a 8 carac
+;
+endPrint:ADDX    1,i
+         LDA     0,i
+         LDBYTEA 0,x
+         CPA     8,i
+         BREQ    aff8f
+         CALL    print7
+         BR      finAff    ;saut pour boucle maillon 
+aff8f:   CALL    print8        
 
 
-
-
-
-
-
-
-
-
-
-
+finAff:    RET0    ; retour du prog affichage
 ;
 ;
 addrfin: .EQUATE 0           ; l'adresse de fin du tableau #2h
@@ -337,7 +468,7 @@ addrt:   .EQUATE 2           ; l'adresse du tableau #2h
 taille:  .EQUATE 4           ; la taille du tableau en octets #2d
 test:    .EQUATE 6           ; adresse de retour des sous-prog2 #2h
 premier: .EQUATE 0           ; l'adresse du tableau début #2h
-fini:    .ASCII  "\n"
+fini:    .ASCII  "\n"        
          .ASCII  "=========================================\n"
          .ASCII  "               AU REVOIR\n"
          .ASCII  "  À bientôt pour de nouvelles aventures\n"
@@ -348,7 +479,7 @@ bienvenu:.ASCII  "=========================================\n"
          .ASCII  "                 MARTINOU\n"
          .ASCII  "-----------------------------------------\n"
          .ASCII  "    Bienvenue dans ce programme de TRI\n"
-         .ASCII  "      de numéros de pièce de monnaie\n"
+         .ASCII  "           de numéros de pièces\n"
          .ASCII  "-----------------------------------------\n"
          .ASCII  "Entrez-les à la suite les uns des autres\n"
          .ASCII  "séparé d'une virgule et fini par 'entrer'\n"
@@ -356,35 +487,51 @@ bienvenu:.ASCII  "=========================================\n"
          .ASCII  "            Maximum 5 numéros\n"
          .ASCII  "=========================================\n\x00"
 saisir:  .ASCII  "Entrez un ou plusieurs numéros de pièces:\n\x00"
-count:   .WORD   0  
-pointeur:.BYTE   0 
+fleche:  .ASCII " --> \x00"
+count:   .WORD   0           
+pointeur:.BYTE   0           
 ;
-m2:.EQUATE 0     ; adresse du maillon 2 a inverser #2h
-m1:.EQUATE 2     ; adresse du maillon 1 a inverser #2h
-
-
-
-flagI:   .WORD   0
-avInvers: .BLOCK   2 ; #2d1a
-debutTri:.WORD   0 
-long1:   .WORD   0     
-
+m2:      .EQUATE 0           ; adresse du maillon 2 a inverser #2h
+m1:      .EQUATE 2           ; adresse du maillon 1 a inverser #2h
+;
+debutAff:.WORD   0
+;
+c1m1:    .WORD   0           ; les différents caracteres de dates pour les comparaisons
+c1m2:    .WORD   0
+c2m1:    .WORD   0
+c2m2:    .WORD   0
+c3m1:    .WORD   0
+c3m2:    .WORD   0
+c4m1:    .WORD   0
+c4m2:    .WORD   0
+c5m1:    .WORD   0
+c5m2:    .WORD   0
+c6m1:    .WORD   0
+c6m2:    .WORD   0
+;
+;
+AavVal:  .WORD   0           
+XavVal:  .WORD   0           
+val1:    .WORD   0           
+val2:    .WORD   0           
+;
+flagI:   .WORD   0           
+avInveX: .BLOCK  2           ; #2d1a
+avInveA: .BLOCK  2           ; #2d1a
+debutTri:.WORD   0           
+long1:   .WORD   0           
+;
 ;;;;; ANCIEN PAS BIEN
-long:    .WORD   0
-succ:    .WORD   0
-nb2:     .WORD   0
-temp:     .WORD   0
-tempAV:  .WORD   0
-avancer: .WORD   0
-lpremier: .WORD   0 
-
-flagD:     .WORD   0
+long:    .WORD   0           
+succ:    .WORD   0           
+nb2:     .WORD   0           
+temp:    .WORD   0           
+tempAV:  .WORD   0           
+avancer: .WORD   0           
+lpremier:.WORD   0           
+;
+flagD:   .WORD   0           
 ;;;;; ANCIEN PAS BIOEN
-
 ;
 ;
-         .END  
-
-
-
-     
+         .END                  
