@@ -43,7 +43,90 @@ lire:    CPX     addrfin,s
          LDA     count,d     ;charge le compteur de la taille des numeros de pieces
          ADDA    1,i         ;incremente
          STA     count,d     ;sauve
-         CPA     7,i         ;verifie pour la pos du tiret
+;;;;;; chek date ;;;;;;
+         CPA     3,i
+         BREQ    moisc1
+nextChk:NOP0
+         
+         LDA     count,d
+         CPA     4,i
+         BREQ    moisc2
+nextChk2:NOP0
+         
+         LDA     count,d
+         
+         CPA     5,i
+         BREQ    jourc1
+nextChk3:NOP0
+         
+         LDA     count,d
+         
+         CPA     6,i
+         BREQ    jourc2        
+         
+endDate: LDA     count,d
+         BR      passe
+
+
+moisc1:  LDA     0,i
+         LDBYTEA 0,x
+         CPA     '1',i        
+         BREQ    valmoi1
+         CPA     '0',i        
+         BRNE    erreur
+         LDA     0,i
+         BR      nextChk
+
+
+valmoi1: LDA     1,i
+         STA     flagMoi,d 
+         BR      nextChk       
+
+
+
+moisc2:  LDA     0,i
+         LDA     flagMoi,d
+         CPA     1,i
+         BREQ    pasSup12
+         BR      nextChk2
+         
+pasSup12:LDA     0,i
+         LDBYTEA 0,x
+         CPA     '2',i
+         BRGT    erreur
+         BR      nextChk2        
+         
+jourc1:  LDA 0,i
+         LDBYTEA 0,x
+         CPA     '3',i
+         BREQ    valJour1
+         CPA     '3',i
+         BRGT    erreur
+         BR      nextChk3
+
+valJour1:LDA     1,i
+         STA     flagJour,d 
+         BR      nextChk3 
+
+jourc2:  LDA     0,i
+         LDA     flagJour,d
+         CPA     1,i
+         BREQ    pasSup31
+         BR      endDate
+         
+         
+
+pasSup31:LDA     0,i
+         LDBYTEA 0,x
+         CPA     '1',i
+         BRGT    erreur
+         BR      endDate
+
+
+
+;;;;;;;;;;;;;;;;;;;;;
+
+passe:   CPA     7,i         ;verifie pour la pos du tiret
          BREQ    checkTir    
          CPA     9,i         ;verifie pour la pos max possible de la virgule
          BRNE    okvir       
@@ -526,7 +609,9 @@ endClean:LDA 0,i
          STA avInveA,d
          STA debutTri,d          
          STA long1,d
-         STA XavPrint,d 
+         STA XavPrint,d
+         STA flagMoi,d
+         STA flagJour,d
          LDX 0,i 
          RET0
          
@@ -563,7 +648,9 @@ bienvenu:.ASCII  "=========================================\n"
          .ASCII  "=========================================\n\x00"
 saisir:  .ASCII  "\nEntrez un ou plusieurs numéros de pièces:\n\x00"
 fleche:  .ASCII  " --> \x00" 
-count:   .WORD   0           
+count:   .WORD   0
+flagMoi: .WORD   0
+flagJour:.WORD   0           
 pointeur:.BYTE   0 
 ;
 fake:    .BYTE   0          
