@@ -1,0 +1,22 @@
+=========================================
+                 MARTINOU
+-----------------------------------------
+    Bienvenue dans ce programme de TRI
+           de numéros de pièces
+-----------------------------------------
+Entrez-les à la suite les uns des autres
+séparé d'une virgule et fini par 'entrer'
+  saisissez juste 'entrer' pour quitter
+            Maximum 5 numéros
+=========================================
+
+Entrez un ou plusieurs numéros de pièces:
+100220-12 --> 110909-12 --> 111010-12 --> 111030-12 --> 111125-12
+Entrez un ou plusieurs numéros de pièces:
+090201-1 --> 090201-2 --> 090201-01 --> 090222-12 --> 090201-21
+Entrez un ou plusieurs numéros de pièces:
+090909-1 --> 090909-00 --> 090909-11 --> 091209-11 --> 090909-31
+Entrez un ou plusieurs numéros de pièces:
+090909-5 --> 090909-6 --> 091111-7 --> 090909-8 --> 090909-04
+Entrez un ou plusieurs numéros de pièces:
+960101-3 --> 790101-12 --> 990101-12 --> 010101-12

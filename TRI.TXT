@@ -12,16 +12,16 @@ loop:    LDA     tab,i
 calllir: CALL    lireTab     
          LDA     tab,i       
          CALL    TRI         
-         CALL    AFFICHE
-         CALL    NETOYER 
-         BR      loop     
+         CALL    AFFICHE     
+         CALL    NETOYER     
+         BR      loop        
 aurevoir:STOP                
 ;
 ; ----   LE TABLEAU   ----
 ; ------------------------
 tabLen:  .EQUATE 56          ; taille de tab
 tab:     .BLOCK  56          ; le tableau des numeros #1d56a
-debord:  .BLOCK  1          
+debord:  .BLOCK  1           
 mTemp:   .BLOCK  9           ; maillon temp    #1d9a
          .BLOCK  20          ; la sécu
 ;
@@ -39,96 +39,91 @@ lireTab: SUBSP   6,i         ; reserve var locales #taille #addrt #addrfin
          STRO    saisir,d    
 lire:    CPX     addrfin,s   
          BRGE    erreur      ;fin de la saisie, le tableau est rempli
-         LDA     nbMaill,d 
-         CPA     4,i
-         BRGT    erreur 
+         LDA     nbMaill,d   
+         CPA     4,i         
+         BRGT    erreur      
          CHARI   0,x         ;;
          LDA     count,d     ;charge le compteur de la taille des numeros de pieces
          ADDA    1,i         ;incremente
          STA     count,d     ;sauve
 ;;;;;; chek date ;;;;;;
-         CPA     3,i
-         BREQ    moisc1
-nextChk:NOP0
-         
-         LDA     count,d
-         CPA     4,i
-         BREQ    moisc2
-nextChk2:NOP0
-         
-         LDA     count,d
-         
-         CPA     5,i
-         BREQ    jourc1
-nextChk3:NOP0
-         
-         LDA     count,d
-         
-         CPA     6,i
-         BREQ    jourc2        
-         
-endDate: LDA     count,d
-         BR      passe
-
-
-moisc1:  LDA     0,i
-         LDBYTEA 0,x
-         CPA     '1',i        
-         BREQ    valmoi1
-         CPA     '0',i        
-         BRNE    erreur
-         LDA     0,i
-         BR      nextChk
-
-
-valmoi1: LDA     1,i
-         STA     flagMoi,d 
-         BR      nextChk       
-
-
-
-moisc2:  LDA     0,i
-         LDA     flagMoi,d
-         CPA     1,i
-         BREQ    pasSup12
-         BR      nextChk2
-         
-pasSup12:LDA     0,i
-         LDBYTEA 0,x
-         CPA     '2',i
-         BRGT    erreur
-         BR      nextChk2        
-         
-jourc1:  LDA 0,i
-         LDBYTEA 0,x
-         CPA     '3',i
-         BREQ    valJour1
-         CPA     '3',i
-         BRGT    erreur
-         BR      nextChk3
-
-valJour1:LDA     1,i
-         STA     flagJour,d 
-         BR      nextChk3 
-
-jourc2:  LDA     0,i
-         LDA     flagJour,d
-         CPA     1,i
-         BREQ    pasSup31
-         BR      endDate
-         
-         
-
-pasSup31:LDA     0,i
-         LDBYTEA 0,x
-         CPA     '1',i
-         BRGT    erreur
-         BR      endDate
-
-
-
-;;;;;;;;;;;;;;;;;;;;;
-
+         CPA     3,i         
+         BREQ    moisc1      
+nextChk: NOP0                
+         LDA     count,d     
+         CPA     4,i         
+         BREQ    moisc2      
+nextChk2:NOP0                
+         LDA     count,d     
+         CPA     5,i         
+         BREQ    jourc1      
+nextChk3:NOP0                
+         LDA     count,d     
+         CPA     6,i         
+         BREQ    jourc2      
+endDate: LDA     count,d     
+         BR      passe       
+;
+moisc1:  LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     '1',i       
+         BREQ    valmoi1     
+         CPA     '0',i       
+         BRNE    erreur      
+         LDA     1,i         
+         STA     flagZm,d    
+         LDA     0,i         
+         BR      nextChk     
+;
+valmoi1: LDA     1,i         
+         STA     flagMoi,d   
+         BR      nextChk     
+;
+moisc2:  LDA     0,i         
+         LDA     flagMoi,d   
+         CPA     1,i         
+         BREQ    pasSup12    
+         LDA     flagZm,d    
+         CPA     1,i         
+         BREQ    ver0sui     
+         BR      nextChk2    
+ver0sui: LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     '0',i       
+         BRNE    nextChk2    
+         BR      erreur      
+;
+pasSup12:LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     '2',i       
+         BRGT    erreur      
+         BR      nextChk2    
+;
+jourc1:  LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     '3',i       
+         BREQ    valJour1    
+         CPA     '3',i       
+         BRGT    erreur      
+         BR      nextChk3    
+;
+valJour1:LDA     1,i         
+         STA     flagJour,d  
+         BR      nextChk3    
+;
+jourc2:  LDA     0,i         
+         LDA     flagJour,d  
+         CPA     1,i         
+         BREQ    pasSup31    
+         BR      endDate     
+;
+pasSup31:LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     '1',i       
+         BRGT    erreur      
+         BR      endDate     
+;;;;    fin partie check date    ;;;;;
+;
 passe:   CPA     7,i         ;verifie pour la pos du tiret
          BREQ    checkTir    
          CPA     9,i         ;verifie pour la pos max possible de la virgule
@@ -144,30 +139,28 @@ num:     LDA     0,i
          CPA     '9',i       
          BRGT    erreur      
          CPA     '0',i       
-         BRLT    erreur     
-         NOP0          
+         BRLT    erreur      
+         NOP0                
          SUBA    '0',i       
          STBYTEA 0,x         
          ADDX    1,i         ;incremenete pour placer le prochain carac
          BR      lire        
-     
 Lirfin:  LDX     taille,s    ; restaure X
          RET6                ; libere #taille #addrt #addrfin
-
-finSaisi:STRO    fini,d 
-         BR      aurevoir
+finSaisi:STRO    fini,d      
+         BR      aurevoir    
 ;
 ;
 ;
 erreur:  STRO    msgErr,d    
          ADDSP   6,i         ; libere #taille #addrt #addrfin
-         CALL    NETOYER
-videFake:CHARI   fake,d      ; vide la pile de char 
-         LDA     0,i
-         LDBYTEA fake,d
-         CPA     '\n',i
-         BREQ    loop
-         BR      videFake       ; ====   A FAIRE  ===
+         CALL    NETOYER     
+videFake:CHARI   fake,d      ; vide la pile de char
+         LDA     0,i         
+         LDBYTEA fake,d      
+         CPA     '\n',i      
+         BREQ    loop        
+         BR      videFake    ; ====   A FAIRE  ===
 ;
 ;
 ; ----   VERIFICATIONS   ----
@@ -188,8 +181,8 @@ checkVi1:LDA     0,i
          SUBX    count,d     ; vas a l'adresse de la longeur
          ADDX    1,i         ; recalibre
          LDA     nbMaill,d   ; regarde le nombre de maillon entre
-         ADDA    1,i
-         STA     nbMaill,d
+         ADDA    1,i         
+         STA     nbMaill,d   
          LDA     count,d     
          SUBA    2,i         ; remet le compteur
          STBYTEA 0,x         ; stock la longeur dans sa case
@@ -197,15 +190,16 @@ checkVi1:LDA     0,i
          LDBYTEA pointeur,d  ; trouve l'adresse relative de l'opé suivant
          ADDA    1,i         
          STBYTEA 0,x         
-         LDA     0,i
+         LDA     0,i         
          STA     flagMoi,d   ;nettoie les fags apres un maillon entrée
-         STA     flagJour,d  ;nettoie les fags apres un maillon entrée      
+         STA     flagJour,d  ;nettoie les fags apres un maillon entrée
+         STA     flagZm,d    
          STA     count,d     ; remet le comteur a zero, pour la suite des opérations
          LDBYTEX pointeur,d  ; recupere x
          ADDX    3,i         ; place x pour la saisie du suivant
          BR      lire        ; si c'est une virgule, donc fin de cette partie
 siVir2:  CPA     '\n',i      
-         BREQ    nonVir      ; == A CHANGER, pour une etiquette du dessous ==         ==========
+         BREQ    cEntre      
 finVi1:  RET0                
 ;
 checkVi2:LDA     0,i         
@@ -217,17 +211,18 @@ bon:     ADDSP   2,i         ; #test
          SUBX    count,d     ; vas a l'adresse de la longeur
          ADDX    1,i         ; recalibre
          LDA     nbMaill,d   ; regarde le nombre de maillon entre
-         ADDA    1,i
-         STA     nbMaill,d
+         ADDA    1,i         
+         STA     nbMaill,d   
          LDA     count,d     
          SUBA    2,i         ; remet le compteur
          STBYTEA 0,x         ; stock la longeur dans sa case
          SUBX    1,i         ; case de l'opé suivant
          LDBYTEA pointeur,d  ; trouve l'adresse relative de l'opé suivant
          STBYTEA 0,x         
-         LDA     0,i
+         LDA     0,i         
          STA     flagMoi,d   ;nettoie les fags apres un maillon entrée
-         STA     flagJour,d  ;nettoie les fags apres un maillon entrée         
+         STA     flagJour,d  ;nettoie les fags apres un maillon entrée
+         STA     flagZm,d    
          STA     count,d     ; remet le comteur a zero, pour la suite des opérations
          LDBYTEX pointeur,d  ; recupere x
          ADDX    2,i         ; place x pour la saisie du suivant
@@ -235,7 +230,7 @@ bon:     ADDSP   2,i         ; #test
 ;
 nonVir:  CPA     '\n',i      
          BRNE    erreur      
-         CALL    SfinTab     
+cEntre:  CALL    SfinTab     ; si carac entre
          LDA     0,i         
          STBYTEA 0,x         ; ecrase le 10 qui traine
          ADDSP   2,i         ; #test
@@ -256,7 +251,7 @@ SfinTab: STBYTEX pointeur,d  ; sauve x, adresse de la suite
          STBYTEA 0,x         ; met 0 pour l'opé suivant (C'est la fin)
          STA     count,d     ; remet le comteur a zero, pour la suite des opérations
          LDBYTEX pointeur,d  ; recupere x
-         RET0               
+         RET0                
 ;
 ;
 ;
@@ -267,11 +262,11 @@ SfinTab: STBYTEX pointeur,d  ; sauve x, adresse de la suite
 TRI:     NOP0                
 ;SUBSP   2,i         ; #premier
 ;STBYTEA addrt,s
-         LDX     tab,i
-         LDA     0,i
-         LDBYTEA 0,x
-         CPA     0,i
-         BREQ    unMAil
+         LDX     tab,i       
+         LDA     0,i         
+         LDBYTEA 0,x         
+         CPA     0,i         
+         BREQ    unMAil      
          BR      premTri     
 Bubble:  LDA     flagI,d     
          CPA     0,i         
@@ -300,10 +295,8 @@ sautb2:  SUBX    1,i
          LDBYTEA 0,x         
          CPA     0,i         
          BREQ    Bubble      
-         BR      loopBu 
-         
-unMAil:  RET0
-              
+         BR      loopBu      
+unMAil:  RET0                
 ;
 ;
 ;;;;;;; SOUS PROGRAMME QUI CHECK LES VALEURS (pis la date)
@@ -528,51 +521,50 @@ loopMail:ADDX    9,i
          BR      maillsui    
 ;
 ;;;;; SOUS prog d'affichage d'un maillon a 7 caracs  ;;;;;;
-print7:  STX     XavPrint,d      ;sauve x avant l'appel 
+print7:  STX     XavPrint,d  ;sauve x avant l'appel
          LDX     debutAff,d  
          ADDX    2,i         
          LDA     0,i         
 aff7p1:  CPA     6,i         
-         BRGE    aff7p2 
-         STA     count7,d 
+         BRGE    aff7p2      
+         STA     count7,d    
          LDA     0,i         
          LDBYTEA 0,x         
          ADDA    '0',i       
          STBYTEA 0,x         
          CHARO   0,x         
-         ADDX    1,i
-         LDA     count7,d        
+         ADDX    1,i         
+         LDA     count7,d    
          ADDA    1,i         
          BR      aff7p1      ; Loop affichage maillon a 7 carac Date (partie 1)
 aff7p2:  CHARO   '-',i       
-         ;ADDX    1,i         
+;ADDX    1,i
          LDA     0,i         
          LDBYTEA 0,x         
          ADDA    '0',i       
          STBYTEA 0,x         
-         CHARO   0,x
-         LDX     XavPrint,d   ;recupere x       
+         CHARO   0,x         
+         LDX     XavPrint,d  ;recupere x
          RET0                ;retour du  sous prog aff maillon a 7 carac
 ;
 ;;;;; SOUS prog d'affichage d'un maillon a 8 caracs  ;;;;;;
-print8:  STX     XavPrint,d   ; Loop affichage maillon a 7 carac Date (partie 1)
+print8:  STX     XavPrint,d  ; Loop affichage maillon a 7 carac Date (partie 1)
          LDX     debutAff,d  
          ADDX    2,i         
          LDA     0,i         
 aff8p1:  CPA     6,i         
-         BRGE    aff8p2
-         STA     count8,d      
+         BRGE    aff8p2      
+         STA     count8,d    
          LDA     0,i         
          LDBYTEA 0,x         
          ADDA    '0',i       
          STBYTEA 0,x         
          CHARO   0,x         
-         ADDX    1,i 
-         LDA     count8,d        
+         ADDX    1,i         
+         LDA     count8,d    
          ADDA    1,i         
          BR      aff8p1      ; Loop affichage maillon a 8 carac Date (partie 1)
 aff8p2:  CHARO   '-',i       
-         ;ADDX    1,i     
          LDA     0,i         
          LDBYTEA 0,x         
          ADDA    '0',i       
@@ -583,8 +575,8 @@ aff8p2:  CHARO   '-',i
          LDBYTEA 0,x         
          ADDA    '0',i       
          STBYTEA 0,x         
-         CHARO   0,x
-         LDX     XavPrint,d  ;recupere x         
+         CHARO   0,x         
+         LDX     XavPrint,d  ;recupere x
          RET0                ;retour du  sous prog aff maillon a 8 carac
 ;
 endPrint:ADDX    1,i         
@@ -596,44 +588,38 @@ endPrint:ADDX    1,i
          BR      finAff      ;saut pour boucle maillon
 aff8f:   CALL    print8      
 finAff:  RET0                ; retour du prog affichage
-
+;
 ;;;;;;;; SOUS- PROGRAMME DE NETOYAGE ;;;;;;;;;
-
-NETOYER: LDX      0,i
-lClean:  CPX      64,i
-         BRGT     endClean
-         LDA      0,i
-         STA      tab,x
-         ADDX     2,i
-         BR      lClean
-
-endClean:LDA 0,i
-         STBYTEA fake,d
-         STBYTEA pointeur,d
-         STA count,d
-         STA count7,d
-         STA count8,d
-         STA debutAff,d
-         STA AavVal,d         
-         STA XavVal,d
+NETOYER: LDX     0,i         
+lClean:  CPX     64,i        
+         BRGT    endClean    
+         LDA     0,i         
+         STA     tab,x       
+         ADDX    2,i         
+         BR      lClean      
+endClean:LDA     0,i         
+         STBYTEA fake,d      
+         STBYTEA pointeur,d  
+         STA     count,d     
+         STA     count7,d    
+         STA     count8,d    
+         STA     debutAff,d  
+         STA     AavVal,d    
+         STA     XavVal,d    
+         STA     flagZm,d    
          STA     nbMaill,d   ;nettoie le nb maillon
-         STA flagI,d         
-         STA avInveX,d
-         STA avInveA,d
-         STA debutTri,d          
-         STA long1,d
-         STA XavPrint,d
-         STA flagMoi,d
-         STA flagJour,d
-         LDX 0,i 
-         RET0
-         
-
-
-
-
-
-
+         STA     flagI,d     
+         STA     avInveX,d   
+         STA     avInveA,d   
+         STA     debutTri,d  
+         STA     long1,d     
+         STA     XavPrint,d  
+         STA     flagMoi,d   
+         STA     flagJour,d  
+         LDX     0,i         
+         RET0                
+;;;;; fin Nettoyage   ;;;
+;
 ;
 ;
 addrfin: .EQUATE 0           ; l'adresse de fin du tableau #2h
@@ -661,21 +647,22 @@ bienvenu:.ASCII  "=========================================\n"
          .ASCII  "=========================================\n\x00"
 saisir:  .ASCII  "\nEntrez un ou plusieurs numéros de pièces:\n\x00"
 fleche:  .ASCII  " --> \x00" 
-count:   .WORD   0
-flagMoi: .WORD   0
-flagJour:.WORD   0
+count:   .WORD   0           
+flagMoi: .WORD   0           
+flagJour:.WORD   0           
+flagZm:  .WORD   0           
 nbMaill: .WORD   0           
-pointeur:.BYTE   0 
+pointeur:.BYTE   0           
 ;
-fake:    .BYTE   0          
+fake:    .BYTE   0           
 ;
 m2:      .EQUATE 0           ; adresse du maillon 2 a inverser #2h
 m1:      .EQUATE 2           ; adresse du maillon 1 a inverser #2h
 ;
-debutAff:.WORD   0 
-count7:.WORD   0
-count8: .WORD   0 
-XavPrint:    .WORD   0     
+debutAff:.WORD   0           
+count7:  .WORD   0           
+count8:  .WORD   0           
+XavPrint:.WORD   0           
 ;
 c1m1:    .WORD   0           ; les différents caracteres de dates pour les comparaisons
 c1m2:    .WORD   0           
@@ -702,17 +689,6 @@ avInveA: .BLOCK  2           ; #2d1a
 debutTri:.WORD   0           
 long1:   .WORD   0           
 ;
-;;;;; ANCIEN PAS BIEN
-long:    .WORD   0           
-succ:    .WORD   0           
-nb2:     .WORD   0           
-temp:    .WORD   0           
-tempAV:  .WORD   0           
-avancer: .WORD   0           
-lpremier:.WORD   0           
-;
-flagD:   .WORD   0           
-;;;;; ANCIEN PAS BIOEN
 ;
 ;
          .END                  
